@@ -35,7 +35,7 @@ A premium, feature-rich astrology chat application built with React Native (Expo
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 20+ (via nvm)
 - npm or yarn
 - iOS Simulator (Mac) or Android Emulator
 
@@ -171,7 +171,7 @@ astrochat/
 - **Platforms**: iOS, Android, Web
 
 ### Environment
-- **Node**: 18+
+- **Node**: 20+ (via nvm)
 - **Expo SDK**: 52
 - **React Native**: 0.81
 
