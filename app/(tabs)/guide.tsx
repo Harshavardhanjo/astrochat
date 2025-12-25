@@ -25,9 +25,9 @@ const FeatureItem = ({ icon, title, description, badge, theme }: any) => (
         )}
       </View>
     </View>
-    <Caption style={{ color: theme.text.secondary }}>
+    <Body style={{ color: theme.text.secondary }}>
       {description}
-    </Caption>
+    </Body>
   </Animated.View>
 );
 

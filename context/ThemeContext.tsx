@@ -14,7 +14,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const deviceColorScheme = useDeviceColorScheme();
-  const [theme, setTheme] = useState<ThemeType>(deviceColorScheme === 'dark' ? 'dark' : 'light');
+  const [theme, setTheme] = useState<ThemeType>('dark');
 
   // Update theme if device preference changes, unless manually overridden logic added later
   // For now, we allow manual toggle which drifts from system.
