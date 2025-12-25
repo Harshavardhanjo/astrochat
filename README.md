@@ -2,8 +2,6 @@
 
 A premium, feature-rich astrology chat application built with React Native (Expo) showcasing modern mobile UI patterns, smooth animations, and interactive messaging features.
 
-![AstroChat Logo](./assets/images/logo.png)
-
 ## 🌟 Features
 
 ### Core Chat Features
