@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { ThemedText, BodyBold, Caption } from './ThemedText';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Animated, { useAnimatedStyle, withSpring, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -24,7 +24,7 @@ export const AIFeedback: React.FC<AIFeedbackProps> = ({ messageId, initialFeedba
 
   // Animation values
   const chipsOpacity = useSharedValue(initialFeedback === 'disliked' ? 1 : 0);
-  const chipsHeight = useSharedValue(initialFeedback === 'disliked' ? 1 : 0);
+  const chipsHeight = useSharedValue(initialFeedback === 'disliked' ? 60 : 0);
 
   const handlePress = (type: 'liked' | 'disliked') => {
     const newFeedback = feedback === type ? null : type;
@@ -32,10 +32,10 @@ export const AIFeedback: React.FC<AIFeedbackProps> = ({ messageId, initialFeedba
     
     if (newFeedback === 'disliked') {
       chipsOpacity.value = withTiming(1, { duration: 300 });
-      chipsHeight.value = withSpring(1);
+      chipsHeight.value = withTiming(60, { duration: 300 });
     } else {
       chipsOpacity.value = withTiming(0, { duration: 200 });
-      chipsHeight.value = withTiming(0);
+      chipsHeight.value = withTiming(0, { duration: 250 });
       setSelectedReason(null);
     }
 
@@ -54,17 +54,29 @@ export const AIFeedback: React.FC<AIFeedbackProps> = ({ messageId, initialFeedba
     setSelectedReason(newReason);
     onFeedbackChange?.(messageId, 'disliked', newReason || undefined);
     
-    // Dismiss overlay after reason is selected
     if (newReason) {
-      setTimeout(() => onDismiss?.(), 300);
+      // Show system alert for rating capture
+      Alert.alert(
+        "Rating Captured",
+        `Vote: Dislike\nReason: ${newReason}`,
+        [
+            { 
+                text: "OK", 
+                onPress: () => {
+                   // Dismiss overlay after user acknowledges
+                   setTimeout(() => onDismiss?.(), 300);
+                } 
+            }
+        ]
+      );
     }
   };
 
   const animatedChipsStyle = useAnimatedStyle(() => {
     return {
       opacity: chipsOpacity.value,
-      transform: [{ scaleY: chipsHeight.value }],
-      height: chipsHeight.value === 0 ? 0 : undefined,
+      height: chipsHeight.value,
+      overflow: 'hidden', // Ensure clips content during height animation
     };
   });
 
@@ -144,11 +156,6 @@ export const AIFeedback: React.FC<AIFeedbackProps> = ({ messageId, initialFeedba
               onPress={() => handleReasonPress(reason)}
               activeOpacity={0.7}
             >
-              {/* <Text style={[
-                styles.chipText,
-                { color: theme.text.secondary, fontFamily: theme.fonts.regular },
-                selectedReason === reason && { color: theme.feedback.error, fontFamily: theme.fonts.bold }
-              ]}>{reason}</Text> */}
               <ThemedText variant="body" style={[
                 styles.chipText,
                 { color: theme.text.secondary, fontFamily: theme.fonts.regular },

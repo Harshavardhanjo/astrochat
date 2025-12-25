@@ -85,14 +85,25 @@ export const SessionEndModal: React.FC<SessionEndModalProps> = ({ visible, onClo
     
     // Delay closing to show "Thank You"
     setTimeout(() => {
-        onSubmit(rating);
-        // Reset state
-        setSubmitted(false);
-        setRating(0);
-        
-        // Show the alert removed for better UX
-        onClose(); // Close the modal
-        router.replace('/(tabs)/chat'); // Go back to Home (Chat List)
+        // Show system alert for rating capture
+        Alert.alert(
+            "Session Rated",
+            `Rating Captured: ${rating} Stars`,
+            [
+                { 
+                    text: "OK", 
+                    onPress: () => {
+                        onSubmit(rating);
+                        // Reset state
+                        setSubmitted(false);
+                        setRating(0);
+                        
+                        onClose(); // Close the modal
+                        router.replace('/(tabs)/chat'); // Go back to Home (Chat List)
+                    } 
+                }
+            ]
+        );
     }, 1500);
   };
 
