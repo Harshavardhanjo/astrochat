@@ -60,10 +60,14 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({ visible, onClose, on
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-      <BlurView intensity={20} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
+      <BlurView intensity={isDark ? 60 : 40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose} />
         
-        <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+        <View style={[styles.modalContent, { 
+            backgroundColor: theme.surface,
+            borderColor: theme.message.aiBorder,
+            borderWidth: 1 
+        }]}>
           <View style={[styles.header, { borderBottomColor: theme.message.aiBorder }]}>
             <H2 style={{ color: theme.text.primary }}>
               New Chat
@@ -100,6 +104,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 5,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',

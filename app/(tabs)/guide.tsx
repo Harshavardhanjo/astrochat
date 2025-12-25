@@ -7,29 +7,41 @@ import { useThemeContext } from '../../context/ThemeContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-const FeatureItem = ({ icon, title, description, badge, theme }: any) => (
-  <Animated.View 
-    entering={FadeInDown.delay(200).springify()}
-    style={[styles.featureCard, { backgroundColor: theme.surface, borderColor: theme.message.aiBorder }]}
-  >
-    <View style={styles.featureHeader}>
-      <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
-        <Ionicons name={icon} size={24} color={theme.primary} />
+const FeatureItem = ({ icon, title, description, badge, theme }: any) => {
+  const isCore = badge === 'CORE';
+  const badgeColor = isCore ? theme.primary : '#06b6d4'; // Gold/Primary or Cyan
+  
+  return (
+    <Animated.View 
+      entering={FadeInDown.delay(200).springify()}
+      style={[styles.featureCard, { backgroundColor: theme.surface, borderColor: theme.message.aiBorder }]}
+    >
+      <View style={styles.featureHeader}>
+        <View style={[styles.iconContainer, { backgroundColor: theme.primary + '15' }]}>
+          <Ionicons name={icon} size={24} color={theme.primary} />
+        </View>
+        <View style={styles.featureTitleContainer}>
+          <BodyBold style={{ color: theme.text.primary }}>{title}</BodyBold>
+          {badge && (
+            <View style={[
+              styles.badge, 
+              { 
+                backgroundColor: badgeColor + '15', // 15% opacity background
+                borderColor: badgeColor,
+                borderWidth: 1
+              }
+            ]}>
+              <Label style={{ color: badgeColor, fontSize: 10, letterSpacing: 1 }}>{badge}</Label>
+            </View>
+          )}
+        </View>
       </View>
-      <View style={styles.featureTitleContainer}>
-        <BodyBold style={{ color: theme.text.primary }}>{title}</BodyBold>
-        {badge && (
-          <View style={[styles.badge, { backgroundColor: theme.primary }]}>
-            <Small style={{ color: '#fff' }}>{badge}</Small>
-          </View>
-        )}
-      </View>
-    </View>
-    <Body style={{ color: theme.text.secondary }}>
-      {description}
-    </Body>
-  </Animated.View>
-);
+      <Body style={{ color: theme.text.secondary }}>
+        {description}
+      </Body>
+    </Animated.View>
+  );
+};
 
 export default function GuideScreen() {
   const { theme: currentTheme, isDark } = useThemeContext();

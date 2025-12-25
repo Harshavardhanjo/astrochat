@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Colors } from '../constants/Colors';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 import { useThemeContext } from '../context/ThemeContext';
 import * as Haptics from 'expo-haptics';
 
@@ -64,6 +65,7 @@ const StarButton = ({
 };
 
 export const SessionEndModal: React.FC<SessionEndModalProps> = ({ visible, onClose, onSubmit }) => {
+  const router = useRouter();
   const { theme: currentTheme } = useThemeContext();
   const theme = Colors[currentTheme];
   const isDark = currentTheme === 'dark';
@@ -88,8 +90,9 @@ export const SessionEndModal: React.FC<SessionEndModalProps> = ({ visible, onClo
         setSubmitted(false);
         setRating(0);
         
-        // Show the alert as requested by the task
-        Alert.alert("Rating Captured", `You rated the session ${rating} stars.`);
+        // Show the alert removed for better UX
+        onClose(); // Close the modal
+        router.replace('/(tabs)/chat'); // Go back to Home (Chat List)
     }, 1500);
   };
 

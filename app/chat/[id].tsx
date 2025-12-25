@@ -17,6 +17,7 @@ import {
   InteractionManager
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -214,6 +215,7 @@ export default function ChatScreen() {
   };
 
   const handleEndChat = () => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setSessionEndVisible(true);
   };
 
@@ -285,8 +287,22 @@ export default function ChatScreen() {
                 </View>
             </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={handleEndChat} style={styles.endButton}>
-                <Text style={styles.endButtonText}>End Chat</Text>
+            <TouchableOpacity 
+                onPress={handleEndChat} 
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 1,
+                    borderColor: 'rgba(239, 68, 68, 0.2)',
+                    borderRadius: 20,
+                    gap: 6
+                }}
+            >
+                <Ionicons name="power" size={16} color="#EF4444" />
+                <Text style={{ color: '#EF4444', fontSize: 12, fontWeight: '600' }}>End</Text>
             </TouchableOpacity>
         </View>
 
