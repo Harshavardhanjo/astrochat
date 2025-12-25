@@ -138,7 +138,13 @@ export default function GuideScreen() {
         ))}
 
         <View style={styles.footer}>
-          <Small style={{ color: theme.text.tertiary }}>
+          <View style={[styles.ctaContainer, { backgroundColor: theme.primary + '20', borderColor: theme.primary }]}>
+             <Ionicons name="chatbubbles" size={24} color={theme.primary} />
+             <BodyBold style={{ color: theme.primary, textAlign: 'center', flex: 1 }}>
+                Ready to explore? Tap the "Chat" or "Profile" tab below! 👇
+             </BodyBold>
+          </View>
+          <Small style={{ color: theme.text.tertiary, marginTop: 20 }}>
             Built with Reanimated 3, Gesture Handler, and lots of ✨
           </Small>
         </View>
@@ -242,7 +248,18 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  ctaContainer: {
+     flexDirection: 'row',
+     alignItems: 'center',
+     gap: 12,
+     paddingHorizontal: 20,
+     paddingVertical: 12,
+     borderRadius: 30,
+     borderWidth: 1,
+     marginHorizontal: 10, // Added margin to prevent hitting screen edges
   },
   footerText: {
     fontSize: 12,
