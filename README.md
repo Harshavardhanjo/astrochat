@@ -122,97 +122,45 @@ astrochat/
 - Standard padding: 12-16px
 - Message margins: 4px vertical
 
-## 💡 Key Implementation Details
+## 💡 Key Implementation Details & Technical Decisions
 
-### 1. Swipe-to-Reply Gesture
-```tsx
-// Uses Gesture.Pan() with UI thread animations
-const panGesture = Gesture.Pan()
-  .activeOffsetX([-10, 10])
-  .onUpdate((event) => {
-    translateX.value = event.translationX * 0.3; // Resistance
-    if (event.translationX > REPLY_THRESHOLD) {
-      replyIconOpacity.value = withTiming(1);
-    }
-  })
-  .onEnd((event) => {
-    if (event.translationX > REPLY_THRESHOLD) {
-      runOnJS(onSwipeToReply)(message);
-    }
-    translateX.value = withSpring(0);
-  });
-```
+### 1. Animations (Reanimated 3+)
+**Implementation**: 
+- Used `useSharedValue` for performant, reactive state (e.g., `translateX`, `scale`).
+- Leveraged `useAnimatedStyle` to map these values to transform properties.
+- Employed `entering` and `exiting` layout animations (e.g., `FadeIn`, `ZoomIn`) for smooth component mounting/unmounting.
 
-**Why**: Running on UI thread ensures 60fps even when JS thread is busy.
+**Why Reanimated?**
+- **Performance**: Animations execute on the **UI thread**, ensuring 60fps performance even if the JavaScript thread is heavy with business logic.
+- **Declarative API**: Layout animations simplify complex entrance/exit transitions without manual state interpolation.
 
-### 2. WhatsApp-Style Reactions
-- Positioned absolutely at `bottom: -8px, right: -8px`
-- Container gets `marginBottom: 12px` when reactions present
-- Click to remove reaction functionality
-- Smooth fade-in/out animations
+### 2. Gesture Handling (Gesture Pan & LongPress)
+**Implementation**: 
+- **Swipe-to-Reply**: `Gesture.Pan()` tracks horizontal movement. Logic runs on the UI thread via worklets to provide instant feedback.
+- **Tactile Long-Press**: `Gesture.LongPress()` combined with `expo-haptics`. We implemented a "shrink" effect on touch-down (`onBegin`) and a "pop" on activation (`onStart`) to mimic premium native interaction.
 
-### 3. AI Feedback with Auto-Dismiss
-```tsx
-// Dismisses overlay after feedback selection
-const handlePress = (type: 'liked' | 'disliked') => {
-  setFeedback(type);
-  onFeedbackChange?.(messageId, type);
-  
-  if (type === 'liked') {
-    setTimeout(() => onDismiss?.(), 300); // Auto-dismiss
-  }
-};
-```
+**Why UI Thread?**
+- Moving gesture logic to the UI thread prevents "lag" during complex interactions, maintaining standard native feel.
 
-### 4. Theme Switching
-- Uses React Context for global theme state
-- Persists preference (can be extended with AsyncStorage)
-- Dynamic color application across all components
-- Smooth transitions without flicker
+### 3. State Management (React Context)
+**Implementation**: 
+- Used `useContext` for global themes (`ThemeContext`) and strictly local `useState` for UI interactions (replying, typing).
+- **No Redux/Zustand**: Deliberately avoided external state libraries.
 
-### 5. Cross-Platform SafeAreaView
-```tsx
-// Proper edges configuration for iOS and Android
-<SafeAreaView edges={['top', 'left', 'right']}>
-  {/* Content */}
-</SafeAreaView>
-```
+**Why Context?**
+- **Simplicity**: For this scope (single screen chat + profile), Context provides sufficient global reach without the boilerplate of Redux.
+- **Performance**: Theme changes are infrequent, making Context an efficient choice. Local component state handles high-frequency updates (like input text) to avoid global re-renders.
 
-## 🧪 Testing & Quality
-
-### Linting
-```bash
-# TypeScript type checking
-npx tsc --noEmit
-
-# ESLint
-npx eslint . --ext .ts,.tsx
-```
-
-### Current Status
-- ✅ **0 TypeScript errors**
-- ✅ **0 critical ESLint errors**
-- ⚠️ 31 minor warnings (unused imports/variables)
-
-## 📱 Platform-Specific Notes
-
-### iOS
-- Uses native date/time pickers
-- Respects notches and safe areas
-- Smooth gesture interactions
-
-### Android
-- Material Design ripple effects
-- Navigation bar handling
-- Keyboard avoiding behavior
+### 4. AI Feedback System
+- **Optimistic Updates**: UI updates immediately upon user interaction (Like/Dislike).
+- **Auto-Dismiss**: "Liked" feedback automatically dismisses the overlay after a short delay for a seamless flow.
 
 ## 🎯 Performance Optimizations
 
-1. **UI Thread Animations**: All gestures and animations run on UI thread via Reanimated
-2. **Lazy Loading**: Components render on-demand
-3. **Memoization**: React.memo for expensive components
-4. **Optimized Re-renders**: Proper dependency arrays in hooks
-5. **Native Driver**: All animations use native driver where possible
+1.  **UI Thread First**: All high-frequency updates (scroll, swipe, drag) bypass the JS bridge.
+2.  **Memoization**: `React.memo` and `useCallback` prevent unnecessary re-renders of the heavy message list.
+3.  **Lazy Loading**: Components like `ReactionOverlay` are conditionally rendered to keep the initial DOM light.
+4.  **Haptic Feedback**: Used `runOnJS` to trigger haptics from within UI worklets, bridging the gap between smooth animations and physical feedback.
 
 ## 🔧 Configuration
 

@@ -167,19 +167,21 @@ export const CHAT_MESSAGES: Record<string, Message[]> = {
       type: "human"
     },
     {
-        id: "11",
-        sender: "user",
-        text: "Thank you both. This session was very helpful.",
-        timestamp: 1734682140000,
-        type: "text"
-      },
-      {
-        id: "12",
-        sender: "system",
-        text: "Session is ending in 2 minutes.",
-        timestamp: 1734682200000,
-        type: "event"
-      }
+      id: "5",
+      sender: "user",
+      text: "Is there any remedy for this? I find it hard to focus.",
+      timestamp: 1734681780000,
+      type: "text",
+      replyTo: "4"
+    },
+    {
+      id: "6",
+      sender: "ai_astrologer",
+      text: "I suggest chanting the Shani Mantra 108 times on Saturdays. Would you like the specific mantra text?",
+      timestamp: 1734681840000,
+      type: "ai",
+      hasFeedback: false
+    }
   ],
   '2': [
     {
