@@ -15,6 +15,7 @@ export default function SettingsScreen() {
   const theme = Colors[currentTheme];
   
   const [editModalVisible, setEditModalVisible] = React.useState(false);
+  const [editingField, setEditingField] = React.useState<keyof typeof USER_PROFILE | null>(null);
   const [profileVersion, setProfileVersion] = React.useState(0);
   
   // Individual pickers for birth details
@@ -105,6 +106,11 @@ export default function SettingsScreen() {
   const handleSaveProfile = (updates: any) => {
     updateUserProfile(updates);
     setProfileVersion(prev => prev + 1); // Force re-render
+  };
+
+  const handleFieldEdit = (field: keyof typeof USER_PROFILE) => {
+      setEditingField(field);
+      setEditModalVisible(true);
   };
 
   return (
@@ -294,54 +300,76 @@ export default function SettingsScreen() {
         <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <View style={styles.sectionHeaderRow}>
             <Label style={{ color: theme.text.secondary, paddingTop: 16, paddingBottom: 4, paddingHorizontal: 16, letterSpacing: 1 }}>ASTROLOGICAL PROFILE</Label>
-            <TouchableOpacity 
-              onPress={() => setEditModalVisible(true)}
-              style={styles.editButton}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons name="create-outline" size={20} color={theme.primary} />
-            </TouchableOpacity>
+            <Small style={{ color: theme.text.tertiary, paddingTop: 16, paddingRight: 16 }}>Tap to change</Small>
           </View>
           
-          <View style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}>
+          <TouchableOpacity 
+            style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}
+            onPress={() => handleFieldEdit('sunSign')}
+            activeOpacity={0.7}
+          >
             <View style={styles.rowLeft}>
                 <View style={[styles.iconContainer, { backgroundColor: isDark ? theme.message.aiBorder : theme.surface }]}>
                     <Ionicons name="sunny" size={20} color={theme.secondary} />
                 </View>
                 <Body>Sun Sign</Body>
             </View>
-            <Caption>{USER_PROFILE.sunSign}</Caption>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Caption>{USER_PROFILE.sunSign}</Caption>
+                <Ionicons name="chevron-forward" size={16} color={theme.text.tertiary} />
+            </View>
+          </TouchableOpacity>
 
-          <View style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}>
+          <TouchableOpacity 
+            style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}
+            onPress={() => handleFieldEdit('moonSign')}
+            activeOpacity={0.7}
+          >
             <View style={styles.rowLeft}>
                 <View style={[styles.iconContainer, { backgroundColor: isDark ? theme.message.aiBorder : theme.surface }]}>
                     <Ionicons name="moon" size={20} color={theme.secondary} />
                 </View>
                 <Body>Moon Sign</Body>
             </View>
-            <Caption>{USER_PROFILE.moonSign}</Caption>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Caption>{USER_PROFILE.moonSign}</Caption>
+                <Ionicons name="chevron-forward" size={16} color={theme.text.tertiary} />
+            </View>
+          </TouchableOpacity>
 
-          <View style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}>
+          <TouchableOpacity 
+            style={[styles.row, { borderBottomColor: theme.message.aiBorder }]}
+            onPress={() => handleFieldEdit('ascendant')}
+            activeOpacity={0.7}
+          >
             <View style={styles.rowLeft}>
                 <View style={[styles.iconContainer, { backgroundColor: isDark ? theme.message.aiBorder : theme.surface }]}>
                     <Ionicons name="planet" size={20} color={theme.secondary} />
                 </View>
                 <Body>Ascendant</Body>
             </View>
-            <Caption>{USER_PROFILE.ascendant}</Caption>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Caption>{USER_PROFILE.ascendant}</Caption>
+                <Ionicons name="chevron-forward" size={16} color={theme.text.tertiary} />
+            </View>
+          </TouchableOpacity>
 
-          <View style={[styles.row, { borderBottomWidth: 0 }]}>
+          <TouchableOpacity 
+            style={[styles.row, { borderBottomWidth: 0 }]}
+            onPress={() => handleFieldEdit('currentDasha')}
+            activeOpacity={0.7}
+          >
             <View style={styles.rowLeft}>
                 <View style={[styles.iconContainer, { backgroundColor: isDark ? theme.message.aiBorder : theme.surface }]}>
                     <Ionicons name="hourglass" size={20} color={theme.secondary} />
                 </View>
                 <Body>Current Dasha</Body>
             </View>
-            <Caption>{USER_PROFILE.currentDasha}</Caption>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Caption>{USER_PROFILE.currentDasha}</Caption>
+                <Ionicons name="chevron-forward" size={16} color={theme.text.tertiary} />
+            </View>
+          </TouchableOpacity>
         </View>
         
         {/* Appearance Section */}
@@ -384,6 +412,7 @@ export default function SettingsScreen() {
           onClose={() => setEditModalVisible(false)}
           currentProfile={USER_PROFILE}
           onSave={handleSaveProfile}
+          editingField={editingField}
         />
 
       </ScrollView>

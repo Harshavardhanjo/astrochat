@@ -12,72 +12,60 @@ interface EditAstroModalProps {
   onClose: () => void;
   currentProfile: UserProfile;
   onSave: (updates: Partial<UserProfile>) => void;
+  editingField: keyof UserProfile | null;
 }
 
 export const EditAstroModal: React.FC<EditAstroModalProps> = ({ 
   visible, 
   onClose, 
   currentProfile,
-  onSave 
+  onSave,
+  editingField
 }) => {
   const { theme: currentTheme, isDark } = useThemeContext();
   const theme = Colors[currentTheme];
 
-  const [sunSign, setSunSign] = useState(currentProfile.sunSign);
-  const [moonSign, setMoonSign] = useState(currentProfile.moonSign);
-  const [ascendant, setAscendant] = useState(currentProfile.ascendant);
-  const [currentDasha, setCurrentDasha] = useState(currentProfile.currentDasha);
+  const [tempValue, setTempValue] = useState('');
+
+  // Reset temp value when modal opens for a new field
+  React.useEffect(() => {
+    if (editingField && visible) {
+        setTempValue(currentProfile[editingField] || '');
+    }
+  }, [editingField, visible, currentProfile]);
 
   const handleSave = () => {
-    onSave({
-      sunSign,
-      moonSign,
-      ascendant,
-      currentDasha
-    });
+    if (editingField) {
+        onSave({ [editingField]: tempValue });
+    }
     onClose();
   };
 
-  const renderPicker = (
-    title: string, 
-    value: string, 
-    options: string[], 
-    onSelect: (value: string) => void
-  ) => (
-    <View style={styles.pickerSection}>
-      <BodyBold style={{ color: theme.text.primary }}>
-        {title}
-      </BodyBold>
-      <ScrollView style={styles.optionsContainer} showsVerticalScrollIndicator={false}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.option,
-              { 
-                backgroundColor: value === option ? theme.primary : theme.surface,
-                borderColor: theme.message.aiBorder
-              }
-            ]}
-            onPress={() => onSelect(option)}
-            activeOpacity={0.7}
-          >
-            <Caption style={[
-              styles.optionText,
-              { 
-                color: value === option ? '#fff' : theme.text.primary
-              }
-            ]}>
-              {option}
-            </Caption>
-            {value === option && (
-              <Ionicons name="checkmark-circle" size={20} color="#fff" />
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
+  const getOptionsForField = (field: keyof UserProfile | null): string[] => {
+      switch (field) {
+          case 'sunSign':
+          case 'moonSign':
+          case 'ascendant':
+              return ZODIAC_SIGNS;
+          case 'currentDasha':
+              return DASHAS;
+          default:
+              return [];
+      }
+  };
+
+  const getTitleForField = (field: keyof UserProfile | null): string => {
+      switch (field) {
+          case 'sunSign': return 'Select Sun Sign';
+          case 'moonSign': return 'Select Moon Sign';
+          case 'ascendant': return 'Select Ascendant';
+          case 'currentDasha': return 'Select Current Dasha';
+          default: return 'Edit Profile';
+      }
+  };
+
+  const options = getOptionsForField(editingField);
+  const title = getTitleForField(editingField);
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
@@ -87,7 +75,7 @@ export const EditAstroModal: React.FC<EditAstroModalProps> = ({
         <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
           <View style={[styles.header, { borderBottomColor: theme.message.aiBorder }]}>
             <H2 style={{ color: theme.text.primary }}>
-              Edit Astrological Profile
+              {title}
             </H2>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close-circle" size={28} color={theme.text.tertiary} />
@@ -95,10 +83,34 @@ export const EditAstroModal: React.FC<EditAstroModalProps> = ({
           </View>
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            {renderPicker("Sun Sign", sunSign, ZODIAC_SIGNS, setSunSign)}
-            {renderPicker("Moon Sign", moonSign, ZODIAC_SIGNS, setMoonSign)}
-            {renderPicker("Ascendant", ascendant, ZODIAC_SIGNS, setAscendant)}
-            {renderPicker("Current Dasha", currentDasha, DASHAS, setCurrentDasha)}
+            <View style={styles.pickerSection}>
+                {options.map((option) => (
+                <TouchableOpacity
+                    key={option}
+                    style={[
+                    styles.option,
+                    { 
+                        backgroundColor: tempValue === option ? theme.primary : theme.surface,
+                        borderColor: theme.message.aiBorder
+                    }
+                    ]}
+                    onPress={() => setTempValue(option)}
+                    activeOpacity={0.7}
+                >
+                    <Caption style={[
+                    styles.optionText,
+                    { 
+                        color: tempValue === option ? '#fff' : theme.text.primary
+                    }
+                    ]}>
+                    {option}
+                    </Caption>
+                    {tempValue === option && (
+                    <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                    )}
+                </TouchableOpacity>
+                ))}
+            </View>
           </ScrollView>
 
           <View style={[styles.footer, { borderTopColor: theme.message.aiBorder }]}>
